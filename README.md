@@ -150,7 +150,10 @@ func main() {
 
     date := "3/2/2023"
     layout := "1/2/2006"
-    serialDate := rwsheets.SerialDate(date, layout)
+    serialDate, err := rwsheets.SerialDate(date, layout)
+    if err != nil {
+        fmt.Printf("failed to convert date %s to serial date\n", date)
+    }
     formula := `=IF($A2+365<TODAY(), "Viewing 1yr after repo was published", "")`
     textValue := "Hello friend!"
     boolValue := false
