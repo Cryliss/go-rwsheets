@@ -1,4 +1,4 @@
-module go-rwsheets
+module github.com/cryliss/go-rwsheets
 
 go 1.19
 
