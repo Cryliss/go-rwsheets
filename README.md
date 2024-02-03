@@ -4,7 +4,9 @@
 
 This is a Golang library to retrieve Google Sheet data and update Google sheet data, with additional helper functions for updating the sheet values.
 
-I create a lot of applications using Google Sheets and these are some functions I've found myself commonly using and I thought they might be useful for others.
+I create a lot of scripts using the Google Sheets API and these are some functions I've found myself commonly using and I thought they might be useful for others.
+
+Some of the functions found in this package are here simply because I would rather call a function with some paramaters than have to write out `sheets.TextFormat{FontFamily: "Verdana", FontSize: int64(10)}` (or some other variation) over and over again.
 
 ## Features
 
@@ -12,33 +14,27 @@ I create a lot of applications using Google Sheets and these are some functions 
 - Update a Sheet with new row data
 - Remove a row from a Sheet
 - Create `*sheets.ExtendedValue` variables for various data types
+- Create `*sheets.NumberFormat` variables for various number formats, like dates, numbers, and currency
+- Create `*sheets.TextFormat` variables
+- Create `*sheets.Borders` variables
+- Create various types of stylized cells using the `Styler`
+- Create a new sheets service
 - Convert a string date to a Google Sheets serial date
 
 <details>
     <summary>Click for a fun fact on Serial Dates!</summary>
 
     Calculating serial dates varies between Google Sheets and Excel!
-    Google Sheets uses `12/30/1899` for the start date while Excel uses `1/1/1900`
+    Google Sheets uses `12/30/1899` for the start date while Excel uses `1/1/1900`. [src](https://www.lifewire.com/entering-dates-with-the-date-function-3123948)
 </details>
 
-## Methods
+## Examples
 
-| Method | Description  |
-| :----  | :---------   |
-| GetSheetData(ssid, readRange string, srv *sheets.Service) ([]*sheets.RowData, error) | Retrieve the row data from spreadsheet |
-| UpdateSheetData(ssid string, endColumnIndex, gid, startColumnIndex, startRowIndex int64, newVals []*sheets.RowData, srv*sheets.Service) error | Update the row data in a spreadsheet |
-| RemoveRow(rows []*sheets.RowData, rmvIdx int) []*sheets.RowData | Remove a specific row in a Sheet |
-| SerialDate(value, format string) (float64, error) | Convert a string date to a Google Sheet serial date |
-| BoolValue(value bool) *sheets.ExtendedValue | For updating UserEnteredValue with a boolean value |
-| FormulaValue(value string) *sheets.ExtendedValue | For updating UserEnteredValue with a formula value |
-| NumberValue(value float64) *sheets.ExtendedValue | For updating UserEnteredValue with a number value |
-| TextValue(value string) *sheets.ExtendedValue | For updating UserEnteredValue with a text value |
+There is an example program that uses the packages NewSheetsService and Styler in the Examples folder.
 
-### Note
+### Sample Using oAuth2
 
-NumberValue should be used in conjuction with SerialDate for updating date values in a Google Sheet.
-
-## Sample Using oAuth2
+The example below requires a credential ID to be able to access the Sheets API. Please refer to Google's [Go Quickstart Guide](https://developers.google.com/sheets/api/quickstart/go) for instructions on how to setup your credential ID.
 
 ```go
 package main
@@ -128,25 +124,24 @@ func getService() *sheets.Service {
     return srv
 }
 
-// Reads a data from a spreadsheet and updates the second row
-// with values of various formats
+// Reads a data from a spreadsheet and updates the second row with values of various formats
 func main() {
     var err error
     var rows, newRows []*sheets.RowData
     var updatedValues sheets.RowData
     var values []*sheets.CellData
 
-    ssid := "13yQwByikICWeVWP-erVchQJhakiRQSAZNz4dvrDNWRk" // Please set here
-    gid := int64(0)                                        // Please set here
+    ssid := "13yQwByikICWeVWP-erVchQJhakiRQSAZNz4dvrDNWRk" // Please set here.
+    gid := int64(0)                                        // Please set here.
     readRange := "Sheet1!A1:D5"                            // Please set here.
 
     // !!! THIS IS NOT ZERO INDEXED !!!
     // E.X: If the last column you are updating is column A, the endColumnIndex is 1.
-    endColumnIndex := int64(4) // Please set here
+    endColumnIndex := int64(4) // Please set here.
 
     // !!! THESE ARE ZERO INDEXED !!!
-    startColumnIndex := int64(0) // Please set here
-    startRowIndex := int64(1)    // Please set here
+    startColumnIndex := int64(0) // Please set here.
+    startRowIndex := int64(1)    // Please set here.
 
     date := "3/2/2023"
     layout := "1/2/2006"
@@ -170,19 +165,19 @@ func main() {
     fmt.Printf("read %d rows from %s\n", len(rows), readRange)
     fmt.Println(rows)
 
-    // Get the values in the second row
+    // Get the values in the second row.
     values = rows[1].Values
 
-    // Update column A with our serial date
+    // Update column A with our serial date.
     values[0].UserEnteredValue = rwsheets.NumberValue(serialDate)
 
-    // Update column B with our formula
+    // Update column B with our formula.
     values[1].UserEnteredValue = rwsheets.FormulaValue(formula)
 
-    // Update column C with our text value
+    // Update column C with our text value.
     values[2].UserEnteredValue = rwsheets.TextValue(textValue)
 
-    // Update column D with our bool value
+    // Update column D with our bool value.
     values[3].UserEnteredValue = rwsheets.BoolValue(boolValue)
 
     updatedValues.Values = values
@@ -196,3 +191,19 @@ func main() {
     fmt.Println("Successfully updated sheet data!")
 }
 ```
+
+### Tip
+
+To find the ID of the *spreadsheet* (the SSID) you're working, you will want to look at the URL for the string that starts after the `/d/` and ends before `/edit`:
+
+`https://docs.google.com/spreadsheets/d/**1hyyME_YgCgj5NyPknYinIvFeqwOo990VysShMDqND80**/edit#gid=0`
+
+To find the ID of the *sheet* (the GID) you're working on, you will want to look at the URL **while you have the sheet active** for the number that follows after `gid=`:
+
+`https://docs.google.com/spreadsheets/d/1hyyME_YgCgj5NyPknYinIvFeqwOo990VysShMDqND80/edit#gid=**0**`
+
+The read range will be the name of the sheet you want to edit followed by "!" and A1 notation for the range you want to read values from:
+
+`Sheet1!A1` - Refers to the first cell in the first row on the sheet named "Sheet1".
+`Sheet1!A1:A200` - Refers to rows (1) through (200) in the first column (A) on the sheet named "Sheet1".
+`Sheet1!A1:F20` - Refers to rows (1) through (20) in the first (6) columns (A - F) on the sheet named "Sheet1".
