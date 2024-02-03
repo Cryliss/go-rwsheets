@@ -1,0 +1,4 @@
+/examples/credentials.json
+/examples/token.json
+/examples/.env
+*.DS_Store
