@@ -196,11 +196,11 @@ func main() {
 
 To find the ID of the *spreadsheet* (the SSID) you're working, you will want to look at the URL for the string that starts after the `/d/` and ends before `/edit`:
 
-`https://docs.google.com/spreadsheets/d/**1hyyME_YgCgj5NyPknYinIvFeqwOo990VysShMDqND80**/edit#gid=0`
+`https://docs.google.com/spreadsheets/d/`**1hyyME_YgCgj5NyPknYinIvFeqwOo990VysShMDqND80**`/edit#gid=0`
 
 To find the ID of the *sheet* (the GID) you're working on, you will want to look at the URL **while you have the sheet active** for the number that follows after `gid=`:
 
-`https://docs.google.com/spreadsheets/d/1hyyME_YgCgj5NyPknYinIvFeqwOo990VysShMDqND80/edit#gid=**0**`
+`https://docs.google.com/spreadsheets/d/1hyyME_YgCgj5NyPknYinIvFeqwOo990VysShMDqND80/edit#gid=`**0**
 
 The read range will be the name of the sheet you want to edit followed by "!" and A1 notation for the range you want to read values from:
 
