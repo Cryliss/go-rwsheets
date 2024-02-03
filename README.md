@@ -204,6 +204,6 @@ To find the ID of the *sheet* (the GID) you're working on, you will want to look
 
 The read range will be the name of the sheet you want to edit followed by "!" and A1 notation for the range you want to read values from:
 
-`Sheet1!A1` - Refers to the first cell in the first row on the sheet named "Sheet1".
-`Sheet1!A1:A200` - Refers to rows (1) through (200) in the first column (A) on the sheet named "Sheet1".
-`Sheet1!A1:F20` - Refers to rows (1) through (20) in the first (6) columns (A - F) on the sheet named "Sheet1".
+- `Sheet1!A1` - Refers to the first cell in the first row on the sheet named "Sheet1".
+- `Sheet1!A1:A200` - Refers to rows (1) through (200) in the first column (A) on the sheet named "Sheet1".
+- `Sheet1!A1:F20` - Refers to rows (1) through (20) in the first (6) columns (A - F) on the sheet named "Sheet1".
